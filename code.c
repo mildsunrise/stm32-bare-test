@@ -119,6 +119,16 @@ void main() {
 
     // CODE
 
-    while (1)
-        gpio_write(PIN_LD5, gpio_read(PIN_USER_BTN));
+    const int led_sequence [] = { 12, 13, 14, 15 };
+    const int led_sequence_size = sizeof(led_sequence) / sizeof(*led_sequence);
+
+    int sequence_idx = 0;
+    int ticks = 0;
+    while (1) {
+        while (!gpio_read(PIN_USER_BTN) || (ticks--) > 0);
+        ticks = 1000000;
+        gpio_write(BASE_GPIOD, led_sequence[sequence_idx], 0);
+        sequence_idx = (sequence_idx + 1) % led_sequence_size;
+        gpio_write(BASE_GPIOD, led_sequence[sequence_idx], 1);
+    }
 }
