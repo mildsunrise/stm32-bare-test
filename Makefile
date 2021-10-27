@@ -17,7 +17,7 @@ code.elf: code.lds.tmp $(SOURCES)
 
 flash: code.elf
 	openocd -f board/stm32f4discovery.cfg \
-	  	-c 'program code.elf preverify verify reset exit 0x08000000'
+		-c 'program code.elf preverify verify reset exit 0x08000000'
 
 clean:
 	rm *.o *.tmp code.elf

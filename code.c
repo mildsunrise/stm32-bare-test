@@ -83,7 +83,7 @@ void gpio_make_output_push_pull(uintptr_t port, int pin) {
 }
 
 void gpio_make_input(uintptr_t port, int pin, int pullups) {
-    SET_BITS(GPIO_MODER(port), 0b00, 0b11, pin * 2); // set output
+    SET_BITS(GPIO_MODER(port), 0b00, 0b11, pin * 2); // set input
     SET_BITS(GPIO_PUPDR(port), pullups, 0b11, pin * 2);
 }
 
