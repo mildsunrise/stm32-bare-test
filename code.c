@@ -105,12 +105,12 @@ int gpio_read(uintptr_t port, int pin) {
 void main() {
     // SET UP BUSES / PERIPHERALS
 
-    // enable clock for GPIOD
-    RCC_AHB1ENR |= (1 << 3);
+    // enable clock for GPIOA and GPIOD
+    RCC_AHB1ENR |= (1 << 0) | (1 << 3);
 
     // SET UP GPIO
 
-    gpio_make_input(PIN_USER_BTN, PUPDR_PULLUP);
+    gpio_make_input(PIN_USER_BTN, PUPDR_PULLDOWN);
 
     gpio_make_output_push_pull(PIN_LD3);
     gpio_make_output_push_pull(PIN_LD4);
@@ -119,10 +119,6 @@ void main() {
 
     // CODE
 
-    gpio_write(PIN_LD3, 1);
-    gpio_write(PIN_LD4, 0);
-    gpio_write(PIN_LD5, 0);
-    gpio_write(PIN_LD6, 1);
-
-    while (1);
+    while (1)
+        gpio_write(PIN_LD5, gpio_read(PIN_USER_BTN));
 }
