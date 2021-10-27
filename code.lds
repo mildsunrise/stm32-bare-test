@@ -6,6 +6,6 @@ MEMORY {
 }
 
 SECTIONS {
-  .text :{ entry.o(.text) *(.text) }
+  .text :{ *(VECTOR_TABLE) *(.text) }
   .noinit :{ *(.noinit) }
 }
