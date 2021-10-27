@@ -3,7 +3,50 @@
 typedef unsigned int uintptr_t;
 typedef unsigned int uint32_t;
 
-#define BASE_GPIO BASE_AHB1
+#define MASK(nbits) (~((~0) << (nbits)))
+
+#define SET_BITS(ref, bits, mask, shift) \
+    (ref) = ((ref) & ~((mask) << (shift))) | ((bits) << (shift))
+
+// RCC registers
+#define RCC_BASE (BASE_AHB1 + 0x3800)
+#define RCC_CR            (*((volatile uint32_t*)(RCC_BASE) + 0))
+#define RCC_PLLCFGR       (*((volatile uint32_t*)(RCC_BASE) + 1))
+#define RCC_CFGR          (*((volatile uint32_t*)(RCC_BASE) + 2))
+#define RCC_CIR           (*((volatile uint32_t*)(RCC_BASE) + 3))
+#define RCC_AHB1RSTR      (*((volatile uint32_t*)(RCC_BASE) + 4))
+#define RCC_AHB2RSTR      (*((volatile uint32_t*)(RCC_BASE) + 5))
+#define RCC_AHB3RSTR      (*((volatile uint32_t*)(RCC_BASE) + 6))
+/* reserved: 7 */
+#define RCC_APB1RSTR      (*((volatile uint32_t*)(RCC_BASE) + 8))
+#define RCC_APB2RSTR      (*((volatile uint32_t*)(RCC_BASE) + 9))
+/* reserved: 10 */
+/* reserved: 11 */
+#define RCC_AHB1ENR       (*((volatile uint32_t*)(RCC_BASE) + 12))
+#define RCC_AHB2ENR       (*((volatile uint32_t*)(RCC_BASE) + 13))
+#define RCC_AHB3ENR       (*((volatile uint32_t*)(RCC_BASE) + 14))
+/* reserved: 15 */
+#define RCC_APB1ENR       (*((volatile uint32_t*)(RCC_BASE) + 16))
+#define RCC_APB2ENR       (*((volatile uint32_t*)(RCC_BASE) + 17))
+/* reserved: 18 */
+/* reserved: 19 */
+#define RCC_AHB1LPENR     (*((volatile uint32_t*)(RCC_BASE) + 20))
+#define RCC_AHB2LPENR     (*((volatile uint32_t*)(RCC_BASE) + 21))
+#define RCC_AHB3LPENR     (*((volatile uint32_t*)(RCC_BASE) + 22))
+/* reserved: 23 */
+#define RCC_APB1LPENR     (*((volatile uint32_t*)(RCC_BASE) + 24))
+#define RCC_APB2LPENR     (*((volatile uint32_t*)(RCC_BASE) + 25))
+/* reserved: 26 */
+/* reserved: 27 */
+#define RCC_BDCR          (*((volatile uint32_t*)(RCC_BASE) + 28))
+#define RCC_CSR           (*((volatile uint32_t*)(RCC_BASE) + 29))
+/* reserved: 30 */
+/* reserved: 31 */
+#define RCC_SSCGR         (*((volatile uint32_t*)(RCC_BASE) + 32))
+#define RCC_PLLI2SCFGR    (*((volatile uint32_t*)(RCC_BASE) + 33))
+
+// GPIO registers
+#define BASE_GPIO (BASE_AHB1)
 #define OFFSET_GPIO_PORT 0x400
 #define BASE_GPIOA (BASE_GPIO + OFFSET_GPIO_PORT * 0)
 #define BASE_GPIOB (BASE_GPIO + OFFSET_GPIO_PORT * 1)
@@ -27,9 +70,6 @@ typedef unsigned int uint32_t;
 #define GPIO_LCKR(port)    (*((volatile uint32_t*)(port) + 7))
 #define GPIO_AFRL(port)    (*((volatile uint32_t*)(port) + 8))
 #define GPIO_AFRH(port)    (*((volatile uint32_t*)(port) + 9))
-
-#define SET_BITS(ref, bits, mask, shift) \
-    (ref) = ((ref) & ~((bits) << (shift))) | ((mask) << (shift))
 
 #define PUPDR_NONE     0b00
 #define PUPDR_PULLUP   0b01
@@ -63,12 +103,21 @@ int gpio_read(uintptr_t port, int pin) {
 #define PIN_LD6  BASE_GPIOD, 15  // down, blue
 
 void main() {
+    // SET UP BUSES / PERIPHERALS
+
+    // enable clock for GPIOD
+    RCC_AHB1ENR |= (1 << 3);
+
+    // SET UP GPIO
+
     gpio_make_input(PIN_USER_BTN, PUPDR_PULLUP);
 
     gpio_make_output_push_pull(PIN_LD3);
     gpio_make_output_push_pull(PIN_LD4);
     gpio_make_output_push_pull(PIN_LD5);
     gpio_make_output_push_pull(PIN_LD6);
+
+    // CODE
 
     gpio_write(PIN_LD3, 1);
     gpio_write(PIN_LD4, 0);
