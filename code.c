@@ -2,6 +2,7 @@
 
 typedef unsigned int uintptr_t;
 typedef unsigned int uint32_t;
+typedef unsigned char uint8_t;
 
 #define MASK(nbits) (~((~0) << (nbits)))
 
@@ -45,6 +46,23 @@ typedef unsigned int uint32_t;
 #define RCC_SSCGR         (*((volatile uint32_t*)(BASE_RCC) + 32))
 #define RCC_PLLI2SCFGR    (*((volatile uint32_t*)(BASE_RCC) + 33))
 
+// USART registers
+#define BASE_USART1 (BASE_APB2 + 0x1000)
+#define BASE_USART2 (BASE_APB1 + 0x4400)
+#define BASE_USART3 (BASE_APB1 + 0x4800)
+#define BASE_UART4  (BASE_APB1 + 0x4C00)
+#define BASE_UART5  (BASE_APB1 + 0x5000)
+#define BASE_USART6 (BASE_APB2 + 0x1400)
+#define BASE_UART7  (BASE_APB1 + 0x7800)
+#define BASE_UART8  (BASE_APB1 + 0x7C00)
+#define USART_SR(port)   (*((volatile uint32_t*)(port) + 0))
+#define USART_DR(port)   (*((volatile uint32_t*)(port) + 1))
+#define USART_BRR(port)  (*((volatile uint32_t*)(port) + 2))
+#define USART_CR1(port)  (*((volatile uint32_t*)(port) + 3))
+#define USART_CR2(port)  (*((volatile uint32_t*)(port) + 4))
+#define USART_CR3(port)  (*((volatile uint32_t*)(port) + 5))
+#define USART_GTPR(port) (*((volatile uint32_t*)(port) + 6))
+
 // GPIO registers
 #define BASE_GPIO (BASE_AHB1)
 #define OFFSET_GPIO_PORT 0x400
@@ -59,7 +77,6 @@ typedef unsigned int uint32_t;
 #define BASE_GPIOI (BASE_GPIO + OFFSET_GPIO_PORT * 8)
 #define BASE_GPIOJ (BASE_GPIO + OFFSET_GPIO_PORT * 9)
 #define BASE_GPIOK (BASE_GPIO + OFFSET_GPIO_PORT * 10)
-// Look, I get to use 'volatile' for its intended purpose!
 #define GPIO_MODER(port)   (*((volatile uint32_t*)(port) + 0))
 #define GPIO_OTYPER(port)  (*((volatile uint32_t*)(port) + 1))
 #define GPIO_OSPEEDR(port) (*((volatile uint32_t*)(port) + 2))
@@ -75,6 +92,12 @@ typedef unsigned int uint32_t;
 #define PUPDR_PULLUP   0b01
 #define PUPDR_PULLDOWN 0b10
 // 0b11 is reserved
+
+void gpio_make_af(uintptr_t port, int pin, int af) {
+    volatile uint32_t* afReg = (pin / 8) ? &GPIO_AFRH(port) : &GPIO_AFRL(port);
+    SET_BITS(*afReg, af, 0b1111, (pin % 8) * 4); // set AF number
+    SET_BITS(GPIO_MODER(port), 0b10, 0b11, pin * 2); // put into AF mode
+}
 
 void gpio_make_output_push_pull(uintptr_t port, int pin) {
     SET_BITS(GPIO_PUPDR(port), PUPDR_NONE, 0b11, pin * 2); // disable pull-up / pull-down
@@ -95,6 +118,51 @@ int gpio_read(uintptr_t port, int pin) {
     return (GPIO_IDR(port) >> pin) & 1;
 }
 
+void init_serial_console() {
+    // enable clock for GPIOA and USART2
+    RCC_AHB1ENR |= (1 << 0);
+    RCC_APB1ENR |= (1 << 17);
+
+    // pass PA2 and PA3 to USART2
+    gpio_make_af(BASE_GPIOA, 2, 7);
+    gpio_make_af(BASE_GPIOA, 3, 7);
+
+    // enable UART, set signal parameters
+    USART_CR1(BASE_USART2) |= (1 << 13); // UE (USART enable)
+    USART_CR1(BASE_USART2) &= ~(1 << 12); // M (word length) = 8 data bits
+    USART_CR1(BASE_USART2) &= ~(1 << 10); // PCE (parity control enable) = no parity
+    SET_BITS(USART_CR2(BASE_USART2), 0b00, 0b11, 12); // STOP = 1 stop bit
+
+    // set up a 115200 baud rate
+    // 1. we only need oversampling by 8, since 16 doesn't improve the error
+    USART_CR1(BASE_USART2) |= (1 << 15); // OVER8
+    // 2. assuming default SYSCLK selection, AHB & APB1 prescaler values,
+    //    we are running at 16MHz. therefore 16MHz * 8 / 115200 = 17.361
+    // 3. mantissa = 17; fractional = 0.361 * 8 = 2.88 -> 3
+    USART_BRR(BASE_USART2) = (17 << 4) | (3 << 0);
+
+    // enable transmitter (sends idle frame)
+    USART_CR1(BASE_USART2) |= (1 << 3); // TE (transmitter enable)
+}
+
+void transmit_buffer(const uint8_t* data, size_t length) {
+    if (!length) return;
+    for (size_t i = 0; i < length; i++) {
+        USART_DR(BASE_USART2) = data[i];
+        while (!((USART_SR(BASE_USART2) >> 7) & 1)); // wait for TXE=1
+    }
+    while (!((USART_SR(BASE_USART2) >> 6) & 1)); // wait for TC=1
+}
+
+void transmit_string(const char* data) {
+    if (!*data) return;
+    for (; *data; data++) {
+        USART_DR(BASE_USART2) = (uint8_t)*data;
+        while (!((USART_SR(BASE_USART2) >> 7) & 1)); // wait for TXE=1
+    }
+    while (!((USART_SR(BASE_USART2) >> 6) & 1)); // wait for TC=1
+}
+
 #define PIN_USER_BTN  BASE_GPIOA, 0
 
 #define PIN_LD3  BASE_GPIOD, 13  // up, orange
@@ -107,6 +175,7 @@ void main() {
 
     // enable clock for GPIOA and GPIOD
     RCC_AHB1ENR |= (1 << 0) | (1 << 3);
+    init_serial_console();
 
     // SET UP GPIO
 
@@ -118,6 +187,8 @@ void main() {
     gpio_make_output_push_pull(PIN_LD6);
 
     // CODE
+
+    transmit_string("Hello from STM32! 🦊💕✨\r\n");
 
     const int led_sequence [] = { 12, 13, 14, 15 };
     const int led_sequence_size = sizeof(led_sequence) / sizeof(*led_sequence);

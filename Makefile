@@ -19,7 +19,7 @@ boot: code.elf
 	openocd -f board/stm32f4discovery.cfg \
 		-c 'init' -c 'reset init' \
 		-c 'load_image code.elf 0x20000000' \
-		-c 'reset init' -c 'resume' -c 'exit'
+		-c 'reset' -c 'exit'
 
 flash: code.elf
 	openocd -f board/stm32f4discovery.cfg \
