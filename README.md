@@ -28,9 +28,9 @@ Don't expect fantastic code quality, or meaningful functionality.
 
 ## Structure
 
- - `entry.c`: Core CPU initialization (vector table, stack, entry point, enable FPU, ...)
  - `code.c`: Main application code
  - `constants.h`: Memory layout constants
+ - `entry.{h,c}`: Core CPU initialization (vector table, stack, entry point, enable FPU, ...)
  - `Makefile`: The 'buildsystem'
  - `code.lds`: Linker script (setting up memory regions)
  - `openocd.cfg`: Programming procedures (flash, RAM boot, etc.)

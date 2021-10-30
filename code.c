@@ -1,13 +1,4 @@
-#include "constants.h"
-
-typedef unsigned int uintptr_t;
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-
-#define MASK(nbits) (~((~0) << (nbits)))
-
-#define SET_BITS(ref, bits, mask, shift) \
-    (ref) = ((ref) & ~((mask) << (shift))) | ((bits) << (shift))
+#include "entry.h"
 
 // RCC registers
 #define BASE_RCC (BASE_AHB1 + 0x3800)
@@ -167,6 +158,51 @@ void transmit_string(const char* data) {
 #define PIN_LD4  BASE_GPIOD, 12  // left, green
 #define PIN_LD5  BASE_GPIOD, 14  // right, red
 #define PIN_LD6  BASE_GPIOD, 15  // down, blue
+
+#define PIN_LCD_DB4  BASE_GPIOE, 10
+#define PIN_LCD_DB5  BASE_GPIOE, 11
+#define PIN_LCD_DB6  BASE_GPIOE, 12
+#define PIN_LCD_DB7  BASE_GPIOE, 13
+#define PIN_LCD_RS   BASE_GPIOE, 14
+#define PIN_LCD_E    BASE_GPIOE, 15
+
+void lcd_raw_init() {
+    // enable clock to GPIOE
+    RCC_AHB1ENR |= (1 << 4);
+
+    // set up pins
+    gpio_write(PIN_LCD_E, 0);
+    gpio_make_output_push_pull(PIN_LCD_E);
+    gpio_make_output_push_pull(PIN_LCD_RS);
+    gpio_make_output_push_pull(PIN_LCD_E);
+    gpio_make_output_push_pull(PIN_LCD_E);
+    gpio_make_output_push_pull(PIN_LCD_E);
+    gpio_make_output_push_pull(PIN_LCD_E);
+}
+
+// assumes RS, R/W already set
+void lcd_raw_write_nibble(uint8_t nibble) {
+    NOP_CYCLE; // >= 30ns
+    gpio_write(PIN_LCD_E, 1);
+    gpio_write(PIN_LCD_DB4, (nibble >> 0) & 1);
+    gpio_write(PIN_LCD_DB5, (nibble >> 1) & 1);
+    gpio_write(PIN_LCD_DB6, (nibble >> 2) & 1);
+    gpio_write(PIN_LCD_DB7, (nibble >> 3) & 1);
+    NOP_CYCLE;
+    NOP_CYCLE;
+    NOP_CYCLE; // >= 150ns
+    gpio_write(PIN_LCD_E, 0);
+    NOP_CYCLE;
+    NOP_CYCLE;
+    NOP_CYCLE; // whole cycle >= 400ns
+}
+
+void lcd_raw_write_byte(char rs, uint8_t byte) {
+    gpio_write(PIN_LCD_RS, rs);
+    // here we would set R/W if we had it
+    lcd_raw_write_nibble(byte >> 4);
+    lcd_raw_write_nibble(byte & 0xF);
+}
 
 void main() {
     // SET UP BUSES / PERIPHERALS
