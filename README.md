@@ -33,9 +33,10 @@ Don't expect fantastic code quality, or meaningful functionality.
  - `constants.h`: Memory layout constants
  - `Makefile`: The 'buildsystem'
  - `code.lds`: Linker script (setting up memory regions)
- 
+ - `openocd.cfg`: Programming procedures (flash, RAM boot, etc.)
+
 Other:
- 
+
  - `docs/`: Manufacturer documentation (board, MCU, core)
 
 

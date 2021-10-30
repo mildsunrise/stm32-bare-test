@@ -15,15 +15,12 @@ code.lds.tmp: code.lds
 code.elf: code.lds.tmp $(SOURCES)
 	arm-none-eabi-ld $(LDFLAGS) $(SOURCES) -T code.lds.tmp -o code.elf
 
+# 'openocd' has to be running in the background
 boot: code.elf
-	openocd -f board/stm32f4discovery.cfg \
-		-c 'init' -c 'reset init' \
-		-c 'load_image code.elf 0x20000000' \
-		-c 'reset' -c 'exit'
+	echo ramboot > /dev/tcp/localhost/4444
 
 flash: code.elf
-	openocd -f board/stm32f4discovery.cfg \
-		-c 'program code.elf preverify verify reset exit 0x08000000'
+	openocd -f openocd.cfg -c init -c romboot -c exit
 
 clean:
 	rm *.o *.tmp code.elf
