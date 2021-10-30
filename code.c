@@ -75,8 +75,6 @@ typedef unsigned char uint8_t;
 #define BASE_GPIOG (BASE_GPIO + OFFSET_GPIO_PORT * 6)
 #define BASE_GPIOH (BASE_GPIO + OFFSET_GPIO_PORT * 7)
 #define BASE_GPIOI (BASE_GPIO + OFFSET_GPIO_PORT * 8)
-#define BASE_GPIOJ (BASE_GPIO + OFFSET_GPIO_PORT * 9)
-#define BASE_GPIOK (BASE_GPIO + OFFSET_GPIO_PORT * 10)
 #define GPIO_MODER(port)   (*((volatile uint32_t*)(port) + 0))
 #define GPIO_OTYPER(port)  (*((volatile uint32_t*)(port) + 1))
 #define GPIO_OSPEEDR(port) (*((volatile uint32_t*)(port) + 2))

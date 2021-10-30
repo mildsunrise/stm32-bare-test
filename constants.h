@@ -1,4 +1,5 @@
 /* GENERAL MEMORY LAYOUT */
+/* (careful: used in linker & assembly) */
 
 #define BASE_BOOT          (0x0000 << 16)  /* (aliased to flash or SRAM) */
 
