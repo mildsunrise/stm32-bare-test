@@ -19,3 +19,6 @@
 #define BASE_AHB1          (0x4002 << 16)  /* until 0x4008_0000 */
 #define BASE_AHB2          (0x5000 << 16)  /* until 0x5007_0000 */
 #define BASE_AHB3          (0xA000 << 16)
+
+/* system peripherals */
+#define BASE_PPB           (0xE000 << 16)

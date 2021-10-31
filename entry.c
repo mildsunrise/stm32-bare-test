@@ -29,6 +29,9 @@ const struct vector_table __VECTOR_TABLE __attribute__((section("VECTOR_TABLE"))
 void main();
 
 static void _start() {
+    // enable CYCCNT for sleep_ns() to operate
+    dwt_enable_cyccnt(1);
+    // application code
     main();
     // control should never reach back here,
     // but if it does, idle loop
