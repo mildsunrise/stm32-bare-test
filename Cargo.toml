@@ -1,0 +1,12 @@
+[package]
+name = "stm32-bare-test"
+version = "0.1.0"
+edition = "2021"
+autobins = false
+
+[lib]
+name = "code"
+path = "src/entry.rs"
+crate-type = ["staticlib"]
+
+[dependencies]

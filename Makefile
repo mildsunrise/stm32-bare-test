@@ -1,16 +1,16 @@
 all: code.elf
 
 # FIXME: enable the FPU
-CFLAGS := -g -O2 -mcpu=cortex-m4+nofp
 LDFLAGS := -nostdlib
 
-SOURCES = code.o entry.o
+SOURCES = $(PWD)/target/thumbv7em-none-eabi/release/libcode.a
+-include $(SOURCES:%.a=%.d)
 
 code.lds.tmp: code.lds
 	arm-none-eabi-cpp -P -C $< -o $@
 
-%.o: %.c
-	arm-none-eabi-gcc -c $(CFLAGS) $< -o $@
+$(SOURCES):
+	cargo build --release
 
 code.elf: code.lds.tmp $(SOURCES)
 	arm-none-eabi-ld $(LDFLAGS) $(SOURCES) -T code.lds.tmp -o code.elf
@@ -23,4 +23,4 @@ flash: code.elf
 	openocd -f openocd.cfg -c init -c romboot -c exit
 
 clean:
-	rm -f *.o *.tmp code.elf
+	rm -r *.tmp code.elf; cargo clean

@@ -1,5 +1,7 @@
 #include "constants.h"
 
+ENTRY(__VECTOR_TABLE)
+
 MEMORY {
   /* this section is called flash_main but we also want to support
      boot from RAM, so make it fit in the first half of SRAM1 */
