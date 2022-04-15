@@ -3,7 +3,14 @@
 #![feature(asm_const)]
 
 mod memory;
-use memory::*;
+mod gpio;
+mod usart;
+mod code;
+mod rcc;
+
+use core::arch::global_asm;
+
+use crate::memory::*;
 
 // VECTOR TABLE
 
@@ -48,14 +55,6 @@ extern "C" {
 // ENTRY POINT
 
 #[no_mangle]
-fn reset() {
-    loop {}
-}
-
-use core::panic::PanicInfo;
-use core::arch::global_asm;
-
-#[panic_handler]
-fn panic_impl(_info: &PanicInfo) -> ! {
-    loop {}
+fn reset() -> ! {
+    crate::code::main()
 }

@@ -23,3 +23,40 @@ pub const BASE_AHB3: usize =          0xA000 << 16;
 
 /* system peripherals */
 pub const BASE_PPB: usize =           0xE000 << 16;
+
+// REGISTER WRAPPER
+
+#[derive(Copy, Clone, Debug)]
+pub struct Register(*mut u32);
+
+impl Register {
+    pub const unsafe fn new(base: usize, offset: isize) -> Self {
+        Register((base as *mut u32).offset(offset))
+    }
+    pub fn read(&self) -> u32 {
+        unsafe { self.0.read_volatile() }
+    }
+    pub fn write(&self, value: u32) {
+        unsafe { self.0.write_volatile(value) }
+    }
+    pub fn update<F: FnOnce(u32) -> u32>(&self, f: F) {
+        self.write(f(self.read()))
+    }
+
+    // for convenience
+    pub fn set_mask(&self, value: u32, mask: u32) {
+        debug_assert!((value & !mask) == 0);
+        self.update(|x| (x & !mask) | value)
+    }
+    pub fn set_bits(&self, value: u32, offset: u8, nbits: u8) {
+        debug_assert!(nbits.checked_add(offset).unwrap() <= 32);
+        let mask = !(!0 << nbits);
+        debug_assert!((value & !mask) == 0);
+        self.set_mask(value << offset, mask << offset)
+    }
+    pub fn get_bits(&self, offset: u8, nbits: u8) -> u32 {
+        debug_assert!(nbits.checked_add(offset).unwrap() <= 32);
+        let mask = !(!0 << nbits);
+        (self.read() >> offset) & mask
+    }
+}
