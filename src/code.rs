@@ -57,7 +57,7 @@ pub fn main() -> ! {
 
     // CODE
 
-    SERIAL.transmit_utf8("Hello from STM32! 🦊💕✨\r\n");
+    SERIAL.transmit_utf8("Hello from Rust! 🦀💕✨\r\n");
     //lcd_write_string("Hello from STM32");
 
     let led_sequence = [ PIN_LD4, PIN_LD3, PIN_LD5, PIN_LD6 ];

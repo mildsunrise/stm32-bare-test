@@ -48,13 +48,13 @@ impl Register {
         debug_assert!((value & !mask) == 0);
         self.update(|x| (x & !mask) | value)
     }
-    pub fn set_bits(&self, value: u32, offset: u8, nbits: u8) {
+    pub fn set_bits(&self, value: u32, nbits: u8, offset: u8) {
         debug_assert!(nbits.checked_add(offset).unwrap() <= 32);
         let mask = !(!0 << nbits);
         debug_assert!((value & !mask) == 0);
         self.set_mask(value << offset, mask << offset)
     }
-    pub fn get_bits(&self, offset: u8, nbits: u8) -> u32 {
+    pub fn get_bits(&self, nbits: u8, offset: u8) -> u32 {
         debug_assert!(nbits.checked_add(offset).unwrap() <= 32);
         let mask = !(!0 << nbits);
         (self.read() >> offset) & mask

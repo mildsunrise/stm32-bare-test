@@ -55,14 +55,14 @@ impl GpioPin {
 
     pub fn make_output_push_pull(&self) {
         let GpioPin(gpio, pin) = *self;
-        gpio.reg_pupdr().set_bits(PUPDR_NONE.into(), 0b11, pin * 2); // disable pull-up / pull-down
+        gpio.reg_pupdr().set_bits(PUPDR_NONE.into(), 2, pin * 2); // disable pull-up / pull-down
         gpio.reg_otyper().set_bits(0b0, 1, pin); // set push-pull
         gpio.reg_moder().set_bits(0b01, 2, pin * 2); // set output
     }
 
     pub fn make_output_open_drain(&self, pullups: u8) {
         let GpioPin(gpio, pin) = *self;
-        debug_assert!(pullups < 2);
+        debug_assert!(pullups <= 0b11);
         gpio.reg_otyper().set_bits(0b1, 1, pin); // set open-drain
         gpio.reg_pupdr().set_bits(pullups.into(), 2, pin * 2); // set pullups
         gpio.reg_moder().set_bits(0b01, 2, pin * 2); // set output
@@ -70,7 +70,7 @@ impl GpioPin {
 
     pub fn make_input(&self, pullups: u8) {
         let GpioPin(gpio, pin) = *self;
-        debug_assert!(pullups < 2);
+        debug_assert!(pullups <= 0b11);
         gpio.reg_moder().set_bits(0b00, 2, pin * 2); // set input
         gpio.reg_pupdr().set_bits(pullups.into(), 2, pin * 2);
     }
