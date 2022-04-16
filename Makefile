@@ -1,7 +1,7 @@
 all: code.elf
 
 # FIXME: enable the FPU
-LDFLAGS := -nostdlib
+LDFLAGS := -nostdlib --gc-sections
 
 SOURCES = $(PWD)/target/thumbv7em-none-eabi/release/libcode.a
 -include $(SOURCES:%.a=%.d)
