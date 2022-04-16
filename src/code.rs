@@ -1,7 +1,12 @@
 use core::panic::PanicInfo;
+use core::fmt::Write;
 
 #[panic_handler]
-fn panic_impl(_info: &PanicInfo) -> ! {
+fn panic_impl(info: &PanicInfo) -> ! {
+    let mut serial = SERIAL;
+    serial.write_fmt(format_args!("⚠️ {}\n", info)).unwrap();
+
+    // FIXME: bring up debugger
     loop {}
 }
 
@@ -44,7 +49,7 @@ pub fn main() -> ! {
     RCC.reg_ahb1enr().set_bits(1, 1, 0);
     RCC.reg_ahb1enr().set_bits(1, 1, 3);
     init_serial_console();
-    SERIAL.transmit_utf8("loading LCD...\r\n");
+    SERIAL.transmit("loading LCD...\r\n".as_bytes());
     //lcd_init();
 
     // SET UP GPIO
@@ -57,7 +62,7 @@ pub fn main() -> ! {
 
     // CODE
 
-    SERIAL.transmit_utf8("Hello from Rust! 🦀💕✨\r\n");
+    SERIAL.transmit("Hello from Rust! 🦀💕✨\r\n".as_bytes());
     //lcd_write_string("Hello from STM32");
 
     let led_sequence = [ PIN_LD4, PIN_LD3, PIN_LD5, PIN_LD6 ];

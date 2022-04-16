@@ -2,6 +2,8 @@
 
 use crate::memory::{Register, BASE_APB1, BASE_APB2};
 
+use core::fmt::Write;
+
 // USART registers
 pub const USART1: Usart = Usart(BASE_APB2 + 0x1000);
 pub const USART2: Usart = Usart(BASE_APB1 + 0x4400);
@@ -43,15 +45,29 @@ impl Usart {
         self.reg_cr1().set_bits(1, 1, 3); // TE (transmitter enable)
     }
 
+    pub fn transmit_byte(&self, data: u8) {
+        self.reg_dr().write(data.into());
+        while self.reg_sr().get_bits(1, 7) == 0 {} // wait for TXE=1
+    }
+
     pub fn transmit(&self, data: &[u8]) {
         for &byte in data.iter() {
-            self.reg_dr().write(byte.into());
-            while self.reg_sr().get_bits(1, 7) == 0 {} // wait for TXE=1
+            self.transmit_byte(byte);
         }
         while self.reg_sr().get_bits(1, 6) == 0 {} // wait for TC=1
     }
+}
 
-    pub fn transmit_utf8(&self, data: &str) {
-        self.transmit(data.as_bytes())
+impl Write for Usart {
+    fn write_str(&mut self, data: &str) -> core::fmt::Result {
+        // send as UTF-8, replacing LF with CRLF
+        for &byte in data.as_bytes() {
+            if byte == '\n' as u8 {
+                self.transmit_byte('\r' as u8)
+            }
+            self.transmit_byte(byte);
+        }
+        self.transmit(&[]);
+        Ok(())
     }
 }
