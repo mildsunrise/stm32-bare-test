@@ -15,7 +15,7 @@ use crate::memory::*;
 // VECTOR TABLE
 
 global_asm!(
-    ".pushsection VECTOR_TABLE, \"aw\"",
+    ".pushsection VECTOR_TABLE, \"a\"",
     ".global __VECTOR_TABLE",
     "__VECTOR_TABLE:",
         ".4byte {initial_sp}",
@@ -49,7 +49,7 @@ struct VectorTable {
 }
 
 extern "C" {
-    static mut __VECTOR_TABLE: VectorTable;
+    static __VECTOR_TABLE: VectorTable;
 }
 
 // ENTRY POINT
