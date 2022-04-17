@@ -23,6 +23,7 @@ pub const BASE_AHB3: usize =          0xA000 << 16;
 
 /* system peripherals */
 pub const BASE_PPB: usize =           0xE000 << 16;
+    pub const SIZE_PPB: usize =                     0x100000;
 
 // REGISTER WRAPPER
 

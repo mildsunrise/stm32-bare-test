@@ -7,6 +7,7 @@ mod gpio;
 mod usart;
 mod code;
 mod rcc;
+mod ppb;
 
 use core::arch::global_asm;
 
