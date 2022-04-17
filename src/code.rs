@@ -1,12 +1,13 @@
 use core::panic::PanicInfo;
 use core::fmt::Write;
+use core::arch::asm;
 
 #[panic_handler]
 fn panic_impl(info: &PanicInfo) -> ! {
     let mut serial = SERIAL;
     serial.write_fmt(format_args!("⚠️ {}\n", info)).unwrap();
 
-    // FIXME: bring up debugger
+    unsafe { asm!("bkpt") };
     loop {}
 }
 

@@ -17,13 +17,25 @@ use crate::memory::*;
 global_asm!(
     ".pushsection VECTOR_TABLE, \"a\"",
     ".global __VECTOR_TABLE",
-    "__VECTOR_TABLE:",
+    "__VECTOR_TABLE: .type __VECTOR_TABLE, #object",
         ".4byte {initial_sp}",
         ".4byte reset",
-        ".rept 256 - 2",
+        ".4byte __nmi",
+        ".4byte __hard_fault",
+        ".rept 256 - 4",
         ".4byte 0",
         ".endr",
+        ".size __VECTOR_TABLE, . - __VECTOR_TABLE",
     ".popsection",
+
+    ".global __nmi",
+    "__nmi: .type __nmi, #function",
+        "bkpt",
+        ".size __nmi, . - __nmi",
+    ".global __hard_fault",
+    "__hard_fault: .type __hard_fault, #function",
+        "bkpt",
+        ".size __hard_fault, . - __hard_fault",
     initial_sp = const (BASE_SRAM1 + SIZE_SRAM1),
 );
 
