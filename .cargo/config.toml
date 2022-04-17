@@ -4,6 +4,7 @@ target = "thumbv7em-none-eabi"
 [target.thumbv7em-none-eabi]
 rustflags = [
     "-C", "default-linker-libraries=no",
+    "-C", "target-cpu=cortex-m4",
 ]
 
 [profile.release]
