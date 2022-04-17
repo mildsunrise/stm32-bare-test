@@ -23,4 +23,4 @@ flash: code.elf
 	openocd -f openocd.cfg -c init -c romboot -c exit
 
 clean:
-	rm *.o *.tmp code.elf
+	rm -f *.o *.tmp code.elf

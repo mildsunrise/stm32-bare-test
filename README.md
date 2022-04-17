@@ -32,7 +32,7 @@ Don't expect fantastic code quality, or meaningful functionality.
  - `constants.h`: Memory layout constants
  - `entry.{h,c}`: Core CPU initialization (vector table, stack, entry point, enable FPU, ...)
  - `Makefile`: The 'buildsystem'
- - `code.lds`: Linker script (setting up memory regions)
+ - `code.lds`: Linker script (set up memory regions, etc.)
  - `openocd.cfg`: Programming procedures (flash, RAM boot, etc.)
 
 Other:

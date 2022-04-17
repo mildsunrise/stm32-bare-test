@@ -10,5 +10,6 @@ MEMORY {
 
 SECTIONS {
   .text :{ *(VECTOR_TABLE) *(.text) }
+  .rodata :{ *(.rodata) }
   .noinit :{ *(.noinit) }
 }
