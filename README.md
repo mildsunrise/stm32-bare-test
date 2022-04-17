@@ -1,19 +1,27 @@
 # stm32-bare-test
 
-This is an attempt at programming an STM32F4 with nothing but an ARM GCC toolchain.  
+This is an attempt at programming an STM32F4 with nothing but a Rust toolchain (with Cargo).  
 OpenOCD is used to flash the compiled firmware to the MCU.
 
 In particular, this is for the [STM32F4DISCOVERY board][stm32f4-discovery].  
-If you have one of these and want to try, install the toolchain and OpenOCD:
+If you have one of these and want to try, install:
+
+ - the Rust toolchain (currently nightly is required), with e.g. [Rustup](https://rustup.rs):
+
+   ~~~ bash
+   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+   rustup toolchain install nightly
+   rustup default nightly
+
+   rustup target add thumbv7em-none-eabi  # support for our target platform
+   ~~~
+
+ - OpenOCD, e.g. `apt install openocd`
+
+Then, compile with:
 
 ~~~ bash
-sudo apt install arm-none-eabi-gcc openocd
-~~~
-
-Then, compile `code.elf` with:
-
-~~~ bash
-make
+cargo build
 ~~~
 
 Plug in your board, and flash it with:

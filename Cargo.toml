@@ -2,11 +2,10 @@
 name = "stm32-bare-test"
 version = "0.1.0"
 edition = "2021"
-autobins = false
 
-[lib]
+[[bin]]
 name = "code"
 path = "src/entry.rs"
-crate-type = ["staticlib"]
 
-[dependencies]
+[build-dependencies]
+cbindgen = "0.21.0"

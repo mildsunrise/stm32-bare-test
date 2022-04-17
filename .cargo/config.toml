@@ -1,5 +1,10 @@
 [build]
 target = "thumbv7em-none-eabi"
 
+[target.thumbv7em-none-eabi]
+rustflags = [
+    "-C", "default-linker-libraries=no",
+]
+
 [profile.release]
 debug = true
