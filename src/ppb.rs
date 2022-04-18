@@ -1,6 +1,8 @@
 #![allow(dead_code)]
 
-// This module exposes the peripherals in the Private Peripheral Bus
+// This module exposes the peripherals in the Private Peripheral Bus.
+// Except for the parts explicitely marked as 'XXX specific', this
+// applies to ARMv7-M cores in general
 
 use crate::memory::{Register, BASE_PPB};
 
@@ -145,8 +147,13 @@ impl Scs {
     pub fn reg_scs_dcrdr      (&self) -> Register { unsafe { Register::new(self.0 + 0xDF0, 2) } }
     pub fn reg_scs_demcr      (&self) -> Register { unsafe { Register::new(self.0 + 0xDF0, 3) } }
 
-    // System control and ID (conflicts with CoreSight)
+    // This last 8-bit section overlaps with CoreSight:
     pub fn reg_scb_stir       (&self) -> Register { unsafe { Register::new(self.0 + 0xF00, 0) } }
+    /// [STM32+CortexM4 specific] FPU
+    pub fn reg_fpccr          (&self) -> Register { unsafe { Register::new(self.0 + 0xF00, 13) } }
+    pub fn reg_fpcar          (&self) -> Register { unsafe { Register::new(self.0 + 0xF00, 14) } }
+    pub fn reg_fpdscr         (&self) -> Register { unsafe { Register::new(self.0 + 0xF00, 15) } }
+
     pub fn coresight(&self) -> CoreSight { CoreSight::new(self.0) }
 }
 

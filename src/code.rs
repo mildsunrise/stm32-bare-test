@@ -44,6 +44,9 @@ fn init_serial_console() {
 }
 
 pub fn main() -> ! {
+    // enable FPU before we do any operations
+    crate::misc::enable_fpu();
+
     // SET UP BUSES / PERIPHERALS
 
     // enable clock for GPIOA and GPIOD

@@ -8,6 +8,7 @@ mod usart;
 mod code;
 mod rcc;
 mod ppb;
+mod misc;
 
 use core::arch::global_asm;
 
