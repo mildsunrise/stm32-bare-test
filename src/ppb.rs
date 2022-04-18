@@ -142,10 +142,10 @@ impl Scs {
     pub fn reg_mpu_rasr_a3    (&self) -> Register { unsafe { Register::new(self.0 + 0xD90, 10) } }
 
     // Debug
-    pub fn reg_scs_dhcsr      (&self) -> Register { unsafe { Register::new(self.0 + 0xDF0, 0) } }
-    pub fn reg_scs_dcrsr      (&self) -> Register { unsafe { Register::new(self.0 + 0xDF0, 1) } }
-    pub fn reg_scs_dcrdr      (&self) -> Register { unsafe { Register::new(self.0 + 0xDF0, 2) } }
-    pub fn reg_scs_demcr      (&self) -> Register { unsafe { Register::new(self.0 + 0xDF0, 3) } }
+    pub fn reg_dhcsr      (&self) -> Register { unsafe { Register::new(self.0 + 0xDF0, 0) } }
+    pub fn reg_dcrsr      (&self) -> Register { unsafe { Register::new(self.0 + 0xDF0, 1) } }
+    pub fn reg_dcrdr      (&self) -> Register { unsafe { Register::new(self.0 + 0xDF0, 2) } }
+    pub fn reg_demcr      (&self) -> Register { unsafe { Register::new(self.0 + 0xDF0, 3) } }
 
     // This last 8-bit section overlaps with CoreSight:
     pub fn reg_scb_stir       (&self) -> Register { unsafe { Register::new(self.0 + 0xF00, 0) } }

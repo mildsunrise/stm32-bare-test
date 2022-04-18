@@ -14,6 +14,7 @@ fn panic_impl(info: &PanicInfo) -> ! {
 use crate::gpio::{GpioPin, GPIOA, GPIOD, GPIOE, PUPDR_PULLDOWN};
 use crate::usart::{Usart, USART2};
 use crate::rcc::{RCC};
+use crate::misc::{sleep_ns};
 
 const PIN_USER_BTN  : GpioPin = GPIOA.pin(0);
 
@@ -44,8 +45,9 @@ fn init_serial_console() {
 }
 
 pub fn main() -> ! {
-    // enable FPU before we do any operations
+    // prepare processor (FPU, etc.) before we do any operations
     crate::misc::enable_fpu();
+    crate::misc::enable_cyccnt(true);
 
     // SET UP BUSES / PERIPHERALS
 
@@ -72,7 +74,7 @@ pub fn main() -> ! {
     let led_sequence = [ PIN_LD4, PIN_LD3, PIN_LD5, PIN_LD6 ];
     let mut sequence_idx = 0;
     loop {
-        //sleep_ns(400 * 1000000);
+        sleep_ns(400 * 1000000);
         while !PIN_USER_BTN.read() {}
         led_sequence[sequence_idx].write(false);
         sequence_idx = (sequence_idx + 1) % led_sequence.len();
