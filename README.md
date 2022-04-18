@@ -36,12 +36,29 @@ Don't expect fantastic code quality, or meaningful functionality.
 
 ## Structure
 
- - `code.c`: Main application code
- - `constants.h`: Memory layout constants
- - `entry.{h,c}`: Core CPU initialization (vector table, stack, entry point, enable FPU, ...)
- - `Makefile`: The 'buildsystem'
+Main files (application-specific code is highlighted in bold):
+
+ - `Cargo.toml`: Cargo package manifest
+ - `src/`: Application code
+   - `memory.rs`: General layout of the address space
+   - `entry.rs`: Firmware entrypoint (vector table, entry point, fault handlers, ...)
+   - `code.rs`: **Main application code**
+   - `ppb.rs`: Internal processor peripherals (SCS / SCB, NVIC, MPU, SysTick, CoreSight, debug features, ...)
+   - `misc.rs`: **Miscellaneous processor operations (FPU, sleep, etc.)**
+   - `rcc.rs`: Reset and Clock Control peripheral
+   - `gpio.rs`: General Purpose Input/Output peripheral
+   - `usart.rs`: Universal Serial Asynchronous Receiver/Transmitter peripheral
+
+Buildsystem:
+
+ - `.cargo/config.toml`: Compilation flags
  - `code.lds`: Linker script (set up memory regions, etc.)
+ - `build.rs`: Build script to preprocess the linker script
+
+Uploading:
+
  - `openocd.cfg`: Programming procedures (flash, RAM boot, etc.)
+ - `Makefile`: Shortcuts to build + upload, for convenience
 
 Other:
 
