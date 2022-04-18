@@ -4,7 +4,7 @@ use std::fs::File;
 use std::process::Command;
 
 fn main() {
-    assert_eq!(env::var("TARGET").unwrap(), "thumbv7em-none-eabi");
+    assert_eq!(env::var("TARGET").unwrap(), "thumbv7em-none-eabihf");
 
     let out_dir = env::var("OUT_DIR").unwrap();
 

@@ -13,7 +13,7 @@ If you have one of these and want to try, install:
    rustup toolchain install nightly
    rustup default nightly
 
-   rustup target add thumbv7em-none-eabi  # support for our target platform
+   rustup target add thumbv7em-none-eabihf  # support for our target platform
    ~~~
 
  - OpenOCD, e.g. `apt install openocd`

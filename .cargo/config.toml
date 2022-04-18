@@ -1,11 +1,10 @@
 [build]
-target = "thumbv7em-none-eabi"
+target = "thumbv7em-none-eabihf"
 
-[target.thumbv7em-none-eabi]
+[target.thumbv7em-none-eabihf]
 rustflags = [
     "-C", "default-linker-libraries=no",
     "-C", "target-cpu=cortex-m4",
-    "-C", "target-feature=-fpregs",
 ]
 
 [profile.release]
